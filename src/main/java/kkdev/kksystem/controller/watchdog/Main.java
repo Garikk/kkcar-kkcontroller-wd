@@ -26,31 +26,8 @@ public class Main {
     
     public static void main(String[] args) {
         //
-        System.out.println("KK System Watchdog");
-        //
-        //
-        File WDJob = new java.io.File(KK_BASE_UPDATE_WDJOB_FILE);   
-        //
-        if (!WDJob.exists())
-            return;
-        //
-        File TempPath = new java.io.File(KK_BASE_UPDATE_TEMP);   
-        //
-        if (!TempPath.exists())
-            TempPath.mkdir();
-        //
-        TempPath = new java.io.File(KK_BASE_UPDATE_TEMP_PLUGINS);   
-        //
-        if (!TempPath.exists())
-            TempPath.mkdir();
+      
 
-        //
-        TempPath = new java.io.File(KK_BASE_UPDATE_TEMP_BASE);   
-        //
-        if (!TempPath.exists())
-            TempPath.mkdir();
-        //
-        WatchdogJob WDJ=WatchdogJob.LoadWatchdogJob(KK_BASE_UPDATE_WDJOB_FILE);
         //
     }
     
