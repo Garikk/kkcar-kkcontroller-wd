@@ -31,6 +31,7 @@ public class Main {
 
     public static void main(String[] args) {
         System.out.println("KKSystem Watchdog");
+        System.out.println("KKSystem Check system status");
         System.out.println("KKSystem Update");
         //
         File TempPath = new java.io.File(KK_BASE_UPDATE_TEMP);
@@ -40,6 +41,7 @@ public class Main {
             return;
         }
         //
+        
         TempPath = new java.io.File(KK_BASE_UPDATE_TEMP_PLUGINS);
         //
         if (TempPath.exists()) {
