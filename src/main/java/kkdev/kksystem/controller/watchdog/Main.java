@@ -10,6 +10,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import kkdev.kksystem.controller.dbusconnector.DBusManager;
+import org.freedesktop.dbus.exceptions.DBusException;
 
 /**
  *
@@ -33,6 +37,15 @@ public class Main {
         System.out.println("KKSystem Watchdog");
         System.out.println("KKSystem Check system status");
         System.out.println("KKSystem Update");
+        //
+        System.out.println("KKSystem Check DBus");        
+        try {
+            DBusManager.Init();
+        } catch (DBusException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return;
+        /*
         //
         File TempPath = new java.io.File(KK_BASE_UPDATE_TEMP);
         //
@@ -95,6 +108,7 @@ public class Main {
                 System.out.println(ex.getMessage());
             }
         }
+        */
     }
 
 }
