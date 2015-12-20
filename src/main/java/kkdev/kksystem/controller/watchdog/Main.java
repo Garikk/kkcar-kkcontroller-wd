@@ -13,6 +13,7 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import kkdev.kksystem.controller.dbusconnector.DBusManager;
+import kkdev.kksystem.controller.watchdog.updater.WDUpdater;
 import org.freedesktop.dbus.exceptions.DBusException;
 
 /**
@@ -34,9 +35,14 @@ public class Main {
     public static final String KK_BASE_UPDATE_TEMP_EXTCONF = KK_BASE_UPDATE_TEMP + "/extconf/";
 
     public static void main(String[] args) {
+        WDConfiguration Config=new WDConfiguration();
+    
         System.out.println("KKSystem Watchdog");
         System.out.println("KKSystem Check system status");
         System.out.println("KKSystem Update");
+        //
+        if (Config.CheckUpdateOnStart)
+            WDUpdater.ExecUpdate();
         //
         System.out.println("KKSystem Check DBus");        
         try {
@@ -45,70 +51,7 @@ public class Main {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
         return;
-        /*
-        //
-        File TempPath = new java.io.File(KK_BASE_UPDATE_TEMP);
-        //
-        if (!TempPath.exists()) {
-            System.out.println("Not found Tmp folder..exitting");
-            return;
-        }
-        //
-        
-        TempPath = new java.io.File(KK_BASE_UPDATE_TEMP_PLUGINS);
-        //
-        if (TempPath.exists()) {
-            try {                    
-                System.out.println("Move new plugin files");
-                for (File F : TempPath.listFiles()) {
-                    System.out.println(F.getCanonicalPath());
-                    Files.move(Paths.get(F.getCanonicalPath()), Paths.get(KK_BASE_PLUGINPATH+F.getName()), REPLACE_EXISTING);
-                }
-            } catch (IOException ex) {
-                System.out.println(ex.getMessage());
-            }
-        }
-
-        TempPath = new java.io.File(KK_BASE_UPDATE_TEMP_BASE);
-        //
-        if (TempPath.exists()) {
-             try {
-                System.out.println("Move new main program");
-                for (File F : TempPath.listFiles()) {
-                    System.out.println(F.getCanonicalPath());
-                    Files.move(Paths.get(F.getCanonicalPath()), Paths.get("./"+F.getName()), REPLACE_EXISTING);
-                }
-            } catch (IOException ex) {
-                System.out.println(ex.getMessage());
-            }
-        }
-        TempPath = new java.io.File(KK_BASE_UPDATE_TEMP_CONF);
-        //
-        if (TempPath.exists()) {
-             try {
-                System.out.println("Move new config files");
-                for (File F : TempPath.listFiles()) {
-                    System.out.println(F.getCanonicalPath());
-                    Files.move(Paths.get(F.getCanonicalPath()), Paths.get(KK_BASE_CONFPATH+F.getName()), REPLACE_EXISTING);
-                }
-            } catch (IOException ex) {
-                System.out.println(ex.getMessage());
-            }
-        }
-        TempPath = new java.io.File(KK_BASE_UPDATE_TEMP_EXTCONF);
-        //
-        if (TempPath.exists()) {
-             try {
-                 System.out.println("Move External config files");
-                for (File F : TempPath.listFiles()) {
-                    System.out.println(F.getCanonicalPath());
-                    Files.move(Paths.get(F.getCanonicalPath()), Paths.get(KK_BASE_CONFPATH+F.getName()), REPLACE_EXISTING);
-                }
-            } catch (IOException ex) {
-                System.out.println(ex.getMessage());
-            }
-        }
-        */
+    
     }
 
 }
