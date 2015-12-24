@@ -5,12 +5,9 @@
  */
 package kkdev.kksystem.controller.watchdog.updater;
 
+import kkdev.kksystem.controller.utils.FileUtils;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
@@ -46,20 +43,21 @@ public abstract class WDUpdater {
         PrepareFolders();
         //
 
+        //Backup old config
         System.out.println("Save current config");
         try {
             System.out.println("Move old backup");
-            Files.deleteIfExists(Paths.get(KK_BASE_UPDATE_REPAIRBACKUP_SECONDARY));
+            FileUtils.deleteRecursive(new File(KK_BASE_UPDATE_REPAIRBACKUP_SECONDARY));
             Files.move(Paths.get(KK_BASE_UPDATE_REPAIRBACKUP_MAIN), Paths.get(KK_BASE_UPDATE_REPAIRBACKUP_SECONDARY));
             System.out.println("Backup existing config");
-            Files.deleteIfExists(Paths.get(KK_BASE_UPDATE_REPAIRBACKUP_MAIN));
-            (new FileCopy()).CopyDirectory(new File(".//"), new File(KK_BASE_UPDATE_REPAIRBACKUP_MAIN));
-            
-
+            FileUtils.deleteRecursive(new File(KK_BASE_UPDATE_REPAIRBACKUP_MAIN));
+            (new FileUtils()).CopyDirectory(new File(".//"), new File(KK_BASE_UPDATE_REPAIRBACKUP_MAIN),"backup");
         } catch (IOException ex) {
             Logger.getLogger(WDUpdater.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+        //
+        //Move update to production
         //
         TempPath = new java.io.File(KK_BASE_UPDATE_TEMP_PLUGINS);
         //
@@ -114,6 +112,14 @@ public abstract class WDUpdater {
                 System.out.println(ex.getMessage());
             }
         }
+        //Remove temp update folder
+        try {
+            //
+            FileUtils.deleteRecursive(new File(KK_BASE_UPDATE_TEMP));
+        } catch (IOException ex) {
+            Logger.getLogger(WDUpdater.class.getName()).log(Level.SEVERE, null, ex);
+        }
+           
 
     }
 
@@ -184,5 +190,5 @@ public abstract class WDUpdater {
         }
         //
     }
-
+   
 }
