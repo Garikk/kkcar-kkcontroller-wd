@@ -47,7 +47,7 @@ public class Main {
     public static final String KK_UPDATE_PACK = "kksupdate.zip";
     public static final String KK_UPDATE_PACK_SIG = "kksupdate.zip.sig";
     
-
+    public static WDSystemState CurrentSystemState;
     static WDConnection KKConnection;
     
     public static void main(String[] args) throws InterruptedException, RemoteException {
@@ -81,6 +81,7 @@ public class Main {
         Runtime runTime = Runtime.getRuntime();
         try {
             Process process = runTime.exec("java kkcontroller-1.0.jar service <&- 2> kklog.log &");
+            //Process process = runTime.exec("java kkcontroller-1.0.jar > c:\\temp\\kklog.log &");
         } catch (IOException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -91,8 +92,9 @@ public class Main {
             i++;
             sleep(1000);
             if (i == 55) {
-                WS = KKConnection.GetWDState();
-                Shutdown = (WS.TargetState==WDSystemState.WDStates.WD_SysState_POWEROFF);
+              //  WS = KKConnection.GetWDState();
+               // Shutdown = (WS.TargetState==WDSystemState.WDStates.WD_SysState_POWEROFF);
+               Shutdown=true;
             }
 
         }

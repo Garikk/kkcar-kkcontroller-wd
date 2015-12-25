@@ -20,53 +20,14 @@ import java.util.logging.Logger;
  *
  * @author blinov_is
  */
-public class WDConnection extends UnicastRemoteObject implements IKKWDConnection {
-
-    @Override
-    public WDSystemState GetWDState() {
-        try {
-            IKKWDConnection c = (IKKWDConnection) Naming.lookup("rmi://localhost/KKCarRMI");
-            return c.GetWDState();
-        } catch (NotBoundException ex) {
-            Logger.getLogger(WDConnection.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(WDConnection.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (RemoteException ex) {
-            Logger.getLogger(WDConnection.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
+public class WDConnection {
+    
+    public WDConnection(){
+        
+        UDPServer.StartUDPServer();
     }
 
-    @Override
-    public WDSystemState SetWDState() {
-        try {
-            IKKWDConnection c = (IKKWDConnection) Naming.lookup("rmi://localhost/KKCarRMI");
-            return c.SetWDState();
-        } catch (NotBoundException ex) {
-            Logger.getLogger(WDConnection.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(WDConnection.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (RemoteException ex) {
-            Logger.getLogger(WDConnection.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
-    }
-
-    public WDConnection() throws RemoteException {
-        System.setProperty("java.security.policy", "security.policy");
-        try {
-            if (System.getSecurityManager() == null) {
-                System.setSecurityManager(new SecurityManager());
-            }
-            Naming.bind("rmi://localhost/KKCarRMI_WD", this);
-        } catch (ConnectException ex) {
-            out.println("!!NOT FOUND WD!!");
-        } catch (AlreadyBoundException ex) {
-            Logger.getLogger(WDConnection.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(WDConnection.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-    }
+    
+   
 
 }
