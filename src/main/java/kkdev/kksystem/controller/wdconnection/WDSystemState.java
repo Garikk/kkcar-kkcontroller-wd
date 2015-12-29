@@ -5,13 +5,16 @@
  */
 package kkdev.kksystem.controller.wdconnection;
 
+import static kkdev.kksystem.controller.wdconnection.WDSystemState.WDStates.WD_SysState_ACTIVE;
+import static kkdev.kksystem.controller.wdconnection.WDSystemState.WDStates.WD_SysState_IDLE;
+
 /**
  *
  * @author blinov_is
  */
 public class WDSystemState {
 
-    public enum WDStates {
+    public  static enum WDStates {
         WD_SysState_ACTIVE, //engine active or extpower
         WD_SysState_IDLE, //engine stop security system inactive
         WD_SysState_POWEROFF, //full system shutdown
@@ -19,14 +22,27 @@ public class WDSystemState {
         WD_SysState_REBOOT, //reboot system
         WD_SysState_REBOOT_KK, //reboot controller
         WD_SysState_NEEDRESTORE, //reboot controller
-        WD_SysState_NEEDRESTORE_EMERG  //reboot controller
+        WD_SysState_NEEDRESTORE_EMERG  //reboot controller and emerg estore
     }
 
-    public WDStates TargetState;
-    public WDStates CurrentState;
+    public WDStates TargetState=WD_SysState_ACTIVE;     //Default - Active,
+    public WDStates CurrentState=WD_SysState_ACTIVE;
 
     public int TargetSleepInterval;
     public int CurrentSleepInterval;
+    
+    public int DogWatchCounter=5;
+    public int EmergencyCounter=5;
+    public int WaitTimer=1;
+    
+    public static final int TIME_WAIT_FOR_RESTARTKK=15000;
+    
+    public static final int EMERG_COUNTER_NEEDRESTARTKK=4;
+    public static final int EMERG_COUNTER_NEEDRESTARTKK_2=3;
+    public static final int EMERG_COUNTER_NEEDRESTARTKK_3=2;
+    public static final int EMERG_COUNTER_NEEDREBOOTSYS=1;
+    public static final int EMERG_COUNTER_EMERGENCY=0;
+    
 
     public byte GetTargetStateB() {
         return (GetByteState(TargetState));

@@ -9,18 +9,15 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketException;
-import java.util.Queue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import kkdev.kksystem.controller.watchdog.Main;
 
 /**
  *
  * @author blinov_is
  */
-public class UDPServer {
-
+public class WatchDogUDPConnection {
+    private static final int WD_UDPPORT=39876;
     private static boolean Stop = false;
 
     public void Stop() {
@@ -34,8 +31,8 @@ public class UDPServer {
             public void run() {
                 DatagramSocket serverSocket;
                 try {
-                    serverSocket = new DatagramSocket(39876);
-                    byte[] receiveData = new byte[1024];
+                    serverSocket = new DatagramSocket(WD_UDPPORT);
+                    byte[] receiveData = new byte[4];
                     byte[] sendData;// = new byte[4];
                     while (!Stop) {
                         DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
@@ -44,22 +41,24 @@ public class UDPServer {
                         sendData = new byte[4];
                         sendData[0] = 7;
                         sendData[1] = 17;
-                        sendData[2] = Main.CurrentSystemState.GetCurrentStateB();
-                        sendData[3] = Main.CurrentSystemState.GetCurrentStateB();
+                        sendData[2] = WatchDogService.getInstance().getCurrentSystemState().GetCurrentStateB();
+                        sendData[3] = WatchDogService.getInstance().getCurrentSystemState().GetCurrentStateB();
 
                         InetAddress IPAddress = receivePacket.getAddress();
                         int port = receivePacket.getPort();
-
-                        DatagramPacket sendPacket
-                                = new DatagramPacket(sendData, sendData.length, IPAddress, port);
+                        String modifiedSentence = new String(receivePacket.getData());
+                        if (modifiedSentence!=null)
+                            System.out.println("INTERCON : " + modifiedSentence);
+                        
+                        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
                         serverSocket.send(sendPacket);
                         Thread.sleep(1000);
                     }
                     serverSocket.close();
                 } catch (IOException ex) {
-                    Logger.getLogger(UDPServer.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(WatchDogUDPConnection.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (InterruptedException ex) {
-                    Logger.getLogger(UDPServer.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(WatchDogUDPConnection.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });
