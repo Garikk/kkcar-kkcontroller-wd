@@ -46,9 +46,11 @@ public class WatchDogUDPConnection {
 
                         InetAddress IPAddress = receivePacket.getAddress();
                         int port = receivePacket.getPort();
-                        String modifiedSentence = new String(receivePacket.getData());
-                        if (modifiedSentence!=null)
-                            System.out.println("INTERCON : " + modifiedSentence);
+                        //
+                        byte[] RecData=receivePacket.getData();
+                        if (RecData[0]==7 & RecData[1]==17)
+                            WatchDogService.getInstance().WatchDogOk(RecData[2],RecData[3]);
+                        //
                         
                         DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
                         serverSocket.send(sendPacket);

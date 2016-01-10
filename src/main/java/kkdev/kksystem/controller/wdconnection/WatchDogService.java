@@ -1,5 +1,7 @@
 package kkdev.kksystem.controller.wdconnection;
 
+import kkdev.kksystem.controller.wdconnection.WDSystemState.WDStates;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -46,6 +48,7 @@ public class WatchDogService  {
         return CurrentSystemState;
     }
     
+    
     public synchronized boolean CheckWatchDog()
     {
         if (CurrentSystemState.DogWatchCounter>0)
@@ -56,28 +59,45 @@ public class WatchDogService  {
         return CurrentSystemState.DogWatchCounter==0;
     }
     
-    public void WatchDogOk()
+    public void WatchDogOk(byte CurrentState,byte TargetState)
     {
+        
+        ChangeWDStateTarget(WDSystemState.GetStateFromByte(TargetState));
         CurrentSystemState.DogWatchCounter=5;
+        CurrentSystemState.EmergencyCounter=5;
     }
     
     private  void RestoreCommand()
     {
-        if (CurrentSystemState.CurrentState!=WDSystemState.WDStates.WD_SysState_NEEDRESTORE &&
-                CurrentSystemState.CurrentState!=WDSystemState.WDStates.WD_SysState_NEEDRESTORE_EMERG && 
+        if (    CurrentSystemState.CurrentState!=WDSystemState.WDStates.WD_SysState_NEEDRESTORE_EMERG && 
                 CurrentSystemState.CurrentState!=WDSystemState.WDStates.WD_SysState_REBOOT_KK
                 )
         {
-            if (CurrentSystemState.EmergencyCounter==WDSystemState.EMERG_COUNTER_NEEDRESTARTKK)
+            if (CurrentSystemState.EmergencyCounter>WDSystemState.EMERG_COUNTER_NEEDREBOOTSYS)
             {
-                ChangeWDState()
+                ChangeWDStateTarget(WDStates.WD_SysState_REBOOT_KK);
+            }
+            else if (CurrentSystemState.EmergencyCounter==WDSystemState.EMERG_COUNTER_NEEDREBOOTSYS)
+            {
+                ChangeWDStateTarget(WDStates.WD_SysState_REBOOT);
+            }
+            else if (CurrentSystemState.EmergencyCounter==WDSystemState.EMERG_COUNTER_EMERGENCY)
+            {
+             ChangeWDStateTarget(WDStates.WD_SysState_NEEDRESTORE_EMERG);
             }
         }
     }
             
     
-    private void ChangeWDState(WDSystemState NewState)
+    private void ChangeWDStateTarget(WDStates NewState)
     {
+         System.out.println("TARGET STATE: " +NewState);
         CurrentSystemState.TargetState=NewState;
+    }
+    
+    public void ChangeWDStateCurrent(WDStates NewState)
+    {
+         System.out.println("CURRENT STATE: " +NewState);
+        CurrentSystemState.CurrentState=NewState;
     }
 }

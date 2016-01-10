@@ -7,6 +7,11 @@ package kkdev.kksystem.controller.wdconnection;
 
 import static kkdev.kksystem.controller.wdconnection.WDSystemState.WDStates.WD_SysState_ACTIVE;
 import static kkdev.kksystem.controller.wdconnection.WDSystemState.WDStates.WD_SysState_IDLE;
+import static kkdev.kksystem.controller.wdconnection.WDSystemState.WDStates.WD_SysState_NEEDRESTORE_EMERG;
+import static kkdev.kksystem.controller.wdconnection.WDSystemState.WDStates.WD_SysState_POWEROFF;
+import static kkdev.kksystem.controller.wdconnection.WDSystemState.WDStates.WD_SysState_REBOOT;
+import static kkdev.kksystem.controller.wdconnection.WDSystemState.WDStates.WD_SysState_REBOOT_KK;
+import static kkdev.kksystem.controller.wdconnection.WDSystemState.WDStates.WD_SysState_SLEEP;
 
 /**
  *
@@ -21,7 +26,6 @@ public class WDSystemState {
         WD_SysState_SLEEP, //security system active, sleep and monitoring state
         WD_SysState_REBOOT, //reboot system
         WD_SysState_REBOOT_KK, //reboot controller
-        WD_SysState_NEEDRESTORE, //reboot controller
         WD_SysState_NEEDRESTORE_EMERG  //reboot controller and emerg estore
     }
 
@@ -52,7 +56,7 @@ public class WDSystemState {
         return (GetByteState(CurrentState));
     }
 
-    private byte GetByteState(WDStates State) {
+    public static byte GetByteState(WDStates State) {
         switch (State) {
             case WD_SysState_ACTIVE:
                 return 1;
@@ -66,12 +70,31 @@ public class WDSystemState {
                 return 5;
             case WD_SysState_REBOOT_KK:
                 return 6;
-            case WD_SysState_NEEDRESTORE:
-                return 7;
             case WD_SysState_NEEDRESTORE_EMERG:
-                return 8;
+                return 7;
             default:
                 return 0;
+        }
+    }
+    public static WDStates GetStateFromByte(int State)
+    {
+      switch (State) {
+            case 1:
+                return WD_SysState_ACTIVE;
+            case 2:
+                return WD_SysState_IDLE;
+            case 3:
+                return WD_SysState_POWEROFF;
+            case 4:
+                return WD_SysState_SLEEP;
+            case 5:
+                return WD_SysState_REBOOT;
+            case 6:
+                return WD_SysState_REBOOT_KK;
+            case 7:
+                return WD_SysState_NEEDRESTORE_EMERG;
+            default:
+                return WD_SysState_IDLE;
         }
     }
 }

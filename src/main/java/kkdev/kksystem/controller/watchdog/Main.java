@@ -47,6 +47,8 @@ public class Main {
     public static final String KK_UPDATE_PACK = "kksupdate.zip";
     public static final String KK_UPDATE_PACK_SIG = "kksupdate.zip.sig";
 
+    private static Process KKProcess;
+
     public static void main(String[] args) throws InterruptedException {
 
         WDConfiguration Config = new WDConfiguration();
@@ -69,12 +71,10 @@ public class Main {
             System.out.println("DBus load error (not found?)");
         }
 
-        System.out.println("Init Watchdog");
+        System.out.println("Init Watchdog and start KK");
         //
-
+        StartKK();
         //
-
-     
         WatchDogService.getInstance().StartWDS();
         int i = 0;
         boolean Shutdown = false;
@@ -82,30 +82,100 @@ public class Main {
         WDStates WDStateTarget;
         WDStates WDStateCurrent;
         while (!Shutdown) {
-            sleep(1000+WatchDogService.getInstance().getCurrentSystemState().WaitTimer);
+            sleep(1000 + WatchDogService.getInstance().getCurrentSystemState().WaitTimer);
             WDStateTarget = WatchDogService.getInstance().getCurrentSystemState().TargetState;
             WDStateCurrent = WatchDogService.getInstance().getCurrentSystemState().CurrentState;
 
-            WatchDogService.getInstance().WatchDogOk();
+            WatchDogService.getInstance().CheckWatchDog();
 
             switch (WDStateTarget) {
                 case WD_SysState_POWEROFF:
                     Shutdown = true;
+                    WatchDogService.getInstance().ChangeWDStateCurrent(WDStates.WD_SysState_POWEROFF);
+                    KillKK();
+                    break;
+                case WD_SysState_REBOOT:
+                    Shutdown=true;
+                    WatchDogService.getInstance().ChangeWDStateCurrent(WDStates.WD_SysState_REBOOT);
+                    KillKK();
+                    break;
+                case WD_SysState_REBOOT_KK:
+                    WatchDogService.getInstance().ChangeWDStateCurrent(WDStates.WD_SysState_REBOOT_KK);
+                    KillKK();
+                    StartKK();
+                    WatchDogService.getInstance().ChangeWDStateCurrent(WDStates.WD_SysState_ACTIVE);
+                    break;
+                case WD_SysState_NEEDRESTORE_EMERG:
+                    EmergencyRestore();
                     break;
             }
         }
+        //
+        //
+        if (WatchDogService.getInstance().getCurrentSystemState().CurrentState==WDStates.WD_SysState_POWEROFF)
+        {
+            out.println("POWER OFF SYSTEM");
+        }
+        else if (WatchDogService.getInstance().getCurrentSystemState().CurrentState==WDStates.WD_SysState_REBOOT)
+        {
+            out.println("REBOOT SYSTEM");
+        }
+        
         out.println("Stop");
         exit(0);
     }
-    private void StartKK()
-    {
-                System.out.println("KKSystem start kkcontroller");
-        Runtime runTime = Runtime.getRuntime();
-       try {
-            Process process = runTime.exec("java -jar kkcontroller-1.0.jar service <&- 2> kklog.log &");
-        } catch (IOException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-        }
+
+    private static void StartKK() {
+        System.out.println("KKSystem start kkcontroller");
+        StartKKProcess();
     }
 
+    private static void KillKK() {
+       if (KKProcess!=null)
+       {
+           KKProcess.destroyForcibly();
+       }
+        
+        
+    }
+
+    private static void StartKKProcess() {
+            Thread KKThread = new Thread(new Runnable() {
+            Process Proc;
+            @Override
+            public void run() {
+                Runtime runTime = Runtime.getRuntime();
+                WDSystemState WState=WatchDogService.getInstance().getCurrentSystemState();
+                System.out.println(WState.CurrentState);
+                while (WState.CurrentState!=WDStates.WD_SysState_POWEROFF)
+                {
+                    WState=WatchDogService.getInstance().getCurrentSystemState();
+                    try {
+                        System.out.println("Exec kkcontroller");
+                        if (WState.CurrentState!=WDStates.WD_SysState_NEEDRESTORE_EMERG)
+                        {
+                          //  Proc = runTime.exec("java -jar kkcontroller-1.0.jar service <& 2> kklog.log");
+                            Proc = runTime.exec("java -jar kkcontroller-1.0.jar > kklog.log");
+                        }
+                    } catch (IOException ex) {
+                        Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    try {
+                        sleep(1000);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+                
+            }
+        });
+         KKThread.start();
+    }
+    
+    
+    private static void EmergencyRestore()
+    {
+       
+        WatchDogService.getInstance().ChangeWDStateCurrent(WDStates.WD_SysState_NEEDRESTORE_EMERG);
+    }
 }
