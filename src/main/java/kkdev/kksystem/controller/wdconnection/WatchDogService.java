@@ -61,7 +61,6 @@ public class WatchDogService  {
     
     public void WatchDogOk(byte CurrentState,byte TargetState)
     {
-        
         ChangeWDStateTarget(WDSystemState.GetStateFromByte(TargetState));
         CurrentSystemState.DogWatchCounter=5;
         CurrentSystemState.EmergencyCounter=5;
@@ -91,13 +90,19 @@ public class WatchDogService  {
     
     private void ChangeWDStateTarget(WDStates NewState)
     {
-         System.out.println("TARGET STATE: " +NewState);
-        CurrentSystemState.TargetState=NewState;
+        if (NewState!=CurrentSystemState.TargetState)
+        {
+            System.out.println("TARGET STATE: " +NewState);
+            CurrentSystemState.TargetState=NewState;
+        }
     }
     
     public void ChangeWDStateCurrent(WDStates NewState)
     {
-         System.out.println("CURRENT STATE: " +NewState);
-        CurrentSystemState.CurrentState=NewState;
+        if (NewState!=CurrentSystemState.CurrentState)
+        {
+            System.out.println("CURRENT STATE: " +NewState);
+            CurrentSystemState.CurrentState=NewState;
+        }
     }
 }

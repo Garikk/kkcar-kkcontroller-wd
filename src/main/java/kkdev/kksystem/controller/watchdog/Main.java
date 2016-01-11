@@ -156,8 +156,11 @@ public class Main {
                         {
                           //  Proc = runTime.exec("java -jar kkcontroller-1.0.jar service <& 2> kklog.log");
                             Proc = runTime.exec("java -jar kkcontroller-1.0.jar > kklog.log");
+                            Proc.waitFor();
                         }
                     } catch (IOException ex) {
+                        Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (InterruptedException ex) {
                         Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     try {
