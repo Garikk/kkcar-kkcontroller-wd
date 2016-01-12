@@ -92,12 +92,10 @@ public class Main {
                 case WD_SysState_POWEROFF:
                     Shutdown = true;
                     WatchDogService.getInstance().ChangeWDStateCurrent(WDStates.WD_SysState_POWEROFF);
-                    KillKK();
                     break;
                 case WD_SysState_REBOOT:
                     Shutdown=true;
                     WatchDogService.getInstance().ChangeWDStateCurrent(WDStates.WD_SysState_REBOOT);
-                    KillKK();
                     break;
                 case WD_SysState_REBOOT_KK:
                     WatchDogService.getInstance().ChangeWDStateCurrent(WDStates.WD_SysState_REBOOT_KK);
@@ -120,7 +118,8 @@ public class Main {
         {
             out.println("REBOOT SYSTEM");
         }
-        
+        //
+        sleep(5000);
         out.println("Stop");
         exit(0);
     }
@@ -147,7 +146,7 @@ public class Main {
                 Runtime runTime = Runtime.getRuntime();
                 WDSystemState WState=WatchDogService.getInstance().getCurrentSystemState();
                 System.out.println(WState.CurrentState);
-                while (WState.CurrentState!=WDStates.WD_SysState_POWEROFF)
+                while (WState.CurrentState!=WDStates.WD_SysState_POWEROFF & WState.CurrentState!=WDStates.WD_SysState_REBOOT)
                 {
                     WState=WatchDogService.getInstance().getCurrentSystemState();
                     try {
