@@ -32,17 +32,22 @@ public class WatchDogUDPConnection {
                 DatagramSocket serverSocket;
                 try {
                     serverSocket = new DatagramSocket(WD_UDPPORT);
-                    byte[] receiveData = new byte[4];
+                    byte[] receiveData = new byte[8];
                     byte[] sendData;// = new byte[4];
                     while (!Stop) {
                         DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
                         serverSocket.receive(receivePacket);
 
-                        sendData = new byte[4];
+                        sendData = new byte[8];
                         sendData[0] = 7;
                         sendData[1] = 17;
                         sendData[2] = WatchDogService.getInstance().getCurrentSystemState().GetCurrentStateB();
                         sendData[3] = WatchDogService.getInstance().getCurrentSystemState().GetCurrentStateB();
+                        sendData[4] = 0; // Internet state. 0 by now default
+                        sendData[5] = 0;
+                        sendData[6] = 0;
+                        sendData[7] = 0;
+                        
 
                         InetAddress IPAddress = receivePacket.getAddress();
                         int port = receivePacket.getPort();
