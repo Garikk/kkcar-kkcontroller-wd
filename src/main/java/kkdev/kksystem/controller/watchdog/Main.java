@@ -150,11 +150,11 @@ public class Main {
                 {
                     WState=WatchDogService.getInstance().getCurrentSystemState();
                     try {
-                        System.out.println("Exec kkcontroller");
+                        
                         if (WState.CurrentState!=WDStates.WD_SysState_NEEDRESTORE_EMERG)
                         {
-                          //  Proc = runTime.exec("java -jar kkcontroller-1.0.jar service <& 2> kklog.log");
-                            Proc = runTime.exec("java -jar kkcontroller-1.0.jar > kklog.log");
+                            System.out.println("Exec kkcontroller");
+                            Proc = runTime.exec("java -jar kkcontroller-1.0.jar >> /srv/kkcar/kklog.log");
                             Proc.waitFor();
                         }
                     } catch (IOException ex) {
